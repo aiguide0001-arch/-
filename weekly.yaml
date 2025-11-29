@@ -1,0 +1,29 @@
+name: Weekly Auto Post (Python)
+on:
+  schedule:
+    - cron: '0 3 * * 1' # 毎週月曜 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run generator
+        env:
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASS: ${{ secrets.WP_APP_PASS }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          AFF_LINK: ${{ secrets.AFF_LINK }}
+          PRIMARY_KEYWORD: ${{ secrets.PRIMARY_KEYWORD }}
+        run: python generate_post.py
